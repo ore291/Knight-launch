@@ -9,3 +9,11 @@
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
     }
+.lower-canvas{
+    position: initial !important;
+}
+
+#canvas{
+    border-style: dashed;
+    border: 4px red;
+}
