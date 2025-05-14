@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
-
 .no-scrollbar::-webkit-scrollbar {
-          display: none;
-      }
-     /* Hide scrollbar for IE, Edge and Firefox */
-      .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
-    }
-.lower-canvas{
-    position: initial !important;
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.lower-canvas {
+  position: initial !important;
 }
 
-#canvas{
-    border-style: dashed;
-    border: 4px red;
+#canvas {
+  border-style: dashed;
+  border: 4px red;
 }
