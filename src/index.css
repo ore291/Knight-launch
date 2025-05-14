@@ -1,3 +1,11 @@
 @import "tailwindcss";
 
 
+.lower-canvas{
+    position: initial !important;
+}
+
+#canvas{
+    border-style: dashed;
+    border: 4px red;
+}
