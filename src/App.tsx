@@ -14,11 +14,13 @@ function App() {
         <Navbar />
         <div className="flex flex-1">
           <Sidebar />
-          <Routes>
-            <Route path="/" element={<MainApp />} />
-             <Route path="/create-project" element={<MainEditor />} />
-             <Route path="/project/:projectId" element={<ProjectPage />} />
-          </Routes>
+          <div className="p-4">
+            <Routes>
+              <Route path="/" element={<MainApp />} />
+              <Route path="/create-project" element={<MainEditor />} />
+              <Route path="/project/:projectId" element={<ProjectPage />} />
+            </Routes>
+          </div>
         </div>
       </div>
     </>

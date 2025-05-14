@@ -1,8 +1,6 @@
-import { useState, type SetStateAction, type ChangeEvent } from "react"
+import { useState, type SetStateAction, } from "react"
 import { db } from "../db/db";
-import ProjectsList from '../components/ProjectsList';
 import type { Screenshot } from "../db/models/Screenshot";
-import type { TextOverlay } from "../db/models/TextOverlay";
 import { type projectDataTypes } from "../types/ProjectData";
 import { CreateProject } from "./Onboarding/CreateProject";
 import { ChooseDevices } from "./Onboarding/ChooseDevices";
@@ -17,14 +15,7 @@ export default function Onboarding({ onClose }: { onClose: SetStateAction<any> }
         setProjectData({ ...projectData, ...data });
         setCurrentStep(currentStep + 1);
     };
-    const convertToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file); // Converts to Base64
-        });
-    };
+    
     const handleFinish = async () => {
 
         const now = new Date();
@@ -37,14 +28,12 @@ export default function Onboarding({ onClose }: { onClose: SetStateAction<any> }
         try {
             const projectId = await db.projects.add(project);
             if (projectData.screenshots.length > 0) {
-                const base64Images = await Promise.all(
-                    projectData.screenshots.map((file) => convertToBase64(file))
-                );
+               
 
-                const screenshotPromises = base64Images.map(async (base64Image) => {
+                const screenshotPromises =   projectData.screenshots.map(async (file) => {
                     const screenshot: Screenshot = {
                         projectId,
-                        baseImage: base64Image,
+                        baseImage: file,
                         textOverlays: [],
                     };
                     return db.screenshots.add(screenshot);

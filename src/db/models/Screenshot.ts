@@ -6,7 +6,7 @@ type Background =
 export interface Screenshot {
   id?: number; // Auto-incremented by Dexie
   projectId: number; // Foreign key referencing Project
-  baseImage: string; // User-uploaded screenshot image
+  baseImage: Blob; // User-uploaded screenshot image
   textOverlays?: TextOverlay[]; // Array of text customizations
   background?: Background; // Background color or predefined image
   deviceFrame?: string; // Name of predefined device frame (e.g., 'iphone12')
