@@ -14,9 +14,9 @@ function App() {
   return (
     <>
    
-      {/* <TestPage/> */}
+      <TestPage/>
   
-      <div className="h-screen flex flex-col">
+      {/* <div className="h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-1">
           <Sidebar />
@@ -29,7 +29,7 @@ function App() {
             </Routes>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   )
 }
