@@ -9,45 +9,13 @@ import {
 } from "fabric";
 import { useRef, useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
+import { saveAs } from "file-saver";
+import { CanvasComponent } from "../components/CanvasComponent";
+import type { CanvasItem, DeviceType } from "../types";
 
-interface DeviceType {
-  name: string;
-  type: "iphone" | "android" | "tab";
-  width: number;
-  height: number;
-  imageUrl: string;
-}
 
-interface CanvasItem {
-  id: string;
-  canvas?: Canvas;
-}
 
-// Reusable Canvas Component
-const CanvasComponent: React.FC<{
-  id: string;
-  onCanvasReady: (id: string, canvas: Canvas) => void;
-}> = ({ id, onCanvasReady }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    if (canvasRef.current) {
-      const fabricCanvas = new Canvas(canvasRef.current, {
-        width: 322.5,
-        height: 500,
-        preserveObjectStacking: true,
-      });
-      fabricCanvas.backgroundColor = "#1a1a1b";
-      fabricCanvas.renderAll();
-      onCanvasReady(id, fabricCanvas);
-      return () => {
-        fabricCanvas.dispose();
-      };
-    }
-  }, [id, onCanvasReady]);
-
-  return <canvas ref={canvasRef} />;
-};
 
 const TestPage = () => {
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([{ id: "canvas-1" }]);
@@ -59,11 +27,16 @@ const TestPage = () => {
     { name: "Google pixel", type: "android", width: 277, height: 585, imageUrl: "/frames/pixel.png" },
     { name: "Nexus9", type: "tab", width: 390, height: 520, imageUrl: "/frames/nexus9.png" },
     { name: "Samsung Galaxy", type: "android", width: 360, height: 760, imageUrl: "/frames/samsungS10.png" },
+    { name: "iphone 8", type: "iphone", width: 168, height: 340, imageUrl: "/frames/iPhone8.png" },
+    { name: "iphone 16 pro", type: "iphone", width: 400, height: 870, imageUrl: "/frames/iPhone16Pro.png" },
+    { name: "Samsung Galaxy A8", type: "android", width: 188, height: 377, imageUrl: "/frames/SamsungGalaxyA8.png" },
   ];
 
   const device = devices[devIndex];
   const phoneImageURL = device.imageUrl;
   const userImageURL = "/testscreenshot.png";
+  // Get the currently selected canvas
+  const selectedCanvas = canvasItems.find((item) => item.id === selectedCanvasId)?.canvas;
 
   // Callback to store the canvas instance when initialized
   const handleCanvasReady = useCallback((id: string, canvas: Canvas) => {
@@ -71,6 +44,62 @@ const TestPage = () => {
       prev.map((item) => (item.id === id ? { ...item, canvas } : item))
     );
   }, []);
+
+  const exportCanvas = () => {
+    if (!selectedCanvas) {
+      alert("No canvas selected!");
+      return;
+    }
+
+    // Optional: Set export scale for higher resolution (e.g., 2x for retina)
+    const scale = 3;
+
+    // Generate data URL
+    const dataURL = selectedCanvas.toDataURL({
+      format: 'png',        // Use 'jpeg' for smaller file size
+      quality: 1,           // Only applies to 'jpeg'
+      multiplier: scale,    // Scales the output image
+    });
+
+    // Create download link
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = `app-screenshot-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const exportAllCanvas = () => {
+    if (!selectedCanvas) {
+      alert("No canvas selected!");
+      return;
+    }
+
+    // Optional: Set export scale for higher resolution (e.g., 2x for retina)
+    const scale = 3;
+    let urls: { download: string; filename: string; }[] = []
+    canvasItems.forEach((item, index) => {
+      // Generate data URL
+      const dataURL = item?.canvas?.toDataURL({
+        format: 'png',        // Use 'jpeg' for smaller file size
+        quality: 1,           // Only applies to 'jpeg'
+        multiplier: scale,    // Scales the output image
+      });
+      urls.push({ download: String(dataURL), filename: `project-name-${index}.png` })
+
+    })
+
+
+
+    // Create download links
+    urls.forEach(function (e) {
+      fetch(encodeURI(e.download))
+        .then(res => res.blob()) // Gets the response and returns it as a blob
+        .then(blob => {
+          saveAs(blob, e.filename);
+        });
+    });
+  };
 
   // Add a new canvas
   const addNewCanvas = () => {
@@ -85,8 +114,7 @@ const TestPage = () => {
 
   }
 
-  // Get the currently selected canvas
-  const selectedCanvas = canvasItems.find((item) => item.id === selectedCanvasId)?.canvas;
+
 
   const addText = () => {
     if (!selectedCanvas) {
@@ -109,6 +137,9 @@ const TestPage = () => {
       return;
     }
     const phoneImg = await FabricImage.fromURL(phoneImageURL);
+    // Get screen dimensions from the frame image
+
+
     const fitScale = Math.min(
       selectedCanvas.width! / phoneImg.width!,
       selectedCanvas.height! / phoneImg.height!
@@ -124,11 +155,61 @@ const TestPage = () => {
       selectable: true,
       hasControls: true,
       hasBorders: true,
+
     });
+
+
     selectedCanvas.add(phoneImg);
     selectedCanvas.setActiveObject(phoneImg);
     selectedCanvas.requestRenderAll();
   };
+
+  const loadMockUp = async () => {
+    
+    if (!selectedCanvas) {
+      alert("Please select a canvas first.");
+      return;
+    }
+       const screenshotImg = await FabricImage.fromURL(userImageURL, {
+         crossOrigin: 'anonymous'
+       })
+       screenshotImg.scaleToHeight(805)
+       screenshotImg.scaleToWidth(380)
+       screenshotImg.set({
+         left: 35,
+         top: 85,
+         selectable: false,
+       });
+       // Create rounded screen mask
+       const screenMask = new Rect({
+         left: 35,
+         top: 85,
+         rx: 55,
+         ry: 55,
+         width: 380,
+         height: 805,
+         absolutePositioned: true,
+       });
+       // Apply clipping mask
+       screenshotImg.clipPath = screenMask;
+ 
+       // Add clipped screenshot to canvas
+       selectedCanvas.add(screenshotImg);
+ 
+       const cutoutImg = await FabricImage.fromURL(phoneImageURL, {
+         crossOrigin: 'anonymous'
+       })
+       cutoutImg.set({
+         left: 0,
+         top: 0,
+         selectable: true,
+       });
+       selectedCanvas.add(cutoutImg);
+       selectedCanvas.sendObjectToBack(screenshotImg);
+     }
+
+
+
 
   async function addNewImageToActiveFrame(
     imageURL: string,
@@ -150,8 +231,11 @@ const TestPage = () => {
     const innerImg = await FabricImage.fromURL(imageURL, {
       crossOrigin: "anonymous",
     });
+
     const frameScaleX = frame.scaleX || 1;
     const frameScaleY = frame.scaleY || 1;
+
+
     const screenCenterX = frame.left! + screenOffsetX * frameScaleX;
     const screenCenterY = frame.top! + screenOffsetY * frameScaleY;
     let scale;
@@ -169,53 +253,69 @@ const TestPage = () => {
         );
         break;
     }
-    const clipRect = new Rect({
-      width: screenWidth * frameScaleX,
-      height: screenHeight * frameScaleY,
-      originX: "center",
-      originY: "center",
-      absolutePositioned: true,
-      left: screenCenterX,
-      top: screenCenterY,
-    });
+
     innerImg.set({
       originX: "center",
       originY: "center",
       scaleX: scale * 1.025,
-      scaleY: scale * 1.01,
-      left: screenCenterX,
-      top: screenCenterY,
+      scaleY: scale * 1.015,
+      left: frame.left,
+      top: frame.top,
+      angle: frame.angle,
       selectable: false,
-      clipPath: device.type === "tab" ? clipRect : undefined,
+      // clipPath: clipRect
+      // clipPath: device.type === "tab" ? clipRect : undefined,
+    });
+    const clipRect = new Rect({
+      originX: "left",
+      originY: "center",
+      // width: frame.width*4,
+      // height: frame.height,
+      absolutePositioned: true,
+      rx: 20,
+      ry: 20,
+      left: frame.left,
+      top: frame.top,
+
     });
 
-    selectedCanvas.on("object:scaling", (e) => {
+    selectedCanvas.sendObjectToBack(innerImg)
+
+    innerImg.clipPath = clipRect
+
+    selectedCanvas.on("object:scaling", () => {
       if (device.type === "tab") {
-        const scale = Math.min(
-          (screenWidth * frameScaleX) / innerImg.width!,
-          (screenHeight * frameScaleY) / innerImg.height!
-        );
-        innerImg.set({ clipPath: null });
-        innerImg.scale(scale);
-      }
-    });
-    selectedCanvas.on("object:modified", (e) => {
-      if (device.type === "tab") {
-        const scale = Math.max(
-          (screenWidth * frameScaleX) / innerImg.width!,
-          (screenHeight * frameScaleY) / innerImg.height!
-        );
-        const clipRect = new Rect({
-          width: innerImg.width! * frameScaleX,
-          height: frame.height! * frameScaleY + 1,
-          originX: "center",
-          originY: "center",
-          absolutePositioned: true,
-          left: screenCenterX,
-          top: screenCenterY,
+        const newScaleX = group.scaleX!;
+        const newScaleY = group.scaleY!;
+        clipRect.set({
+          width: screenWidth * newScaleX,
+          height: screenHeight * newScaleY,
+          left: group.left! + (screenWidth * newScaleX) / 2,
+          top: group.top! + (screenHeight * newScaleY) / 2,
         });
         innerImg.set({ clipPath: clipRect });
-        innerImg.scale(scale);
+        selectedCanvas.renderAll();
+      }
+    });
+    selectedCanvas.on("object:modified", () => {
+      console.log(frame);
+      console.log(innerImg);
+      if (device.type === "tab") {
+        // const scale = Math.max(
+        //   (screenWidth * frameScaleX) / innerImg.width!,
+        //   (screenHeight * frameScaleY) / innerImg.height!
+        // );
+        // const clipRect = new Rect({
+        //   width: innerImg.width! * frameScaleX,
+        //   height: frame.height! * frameScaleY + 1,
+        //   originX: "center",
+        //   originY: "center",
+        //   absolutePositioned: true,
+        //   left: screenCenterX,
+        //   top: screenCenterY,
+        // });
+        // innerImg.set({ clipPath: clipRect });
+        // innerImg.scale(scale);
       }
     });
 
@@ -227,6 +327,8 @@ const TestPage = () => {
       left: frame.left,
       top: frame.top,
       selectable: true,
+      lockMovementX: true,      // Disables horizontal movement
+      lockMovementY: true,
     });
     selectedCanvas.add(group);
     selectedCanvas.setActiveObject(group);
@@ -235,59 +337,76 @@ const TestPage = () => {
 
   return (
     <div className="flex gap-4  w-full h-screen  no-scrollbar items-center">
-      <Sidebar selectedCanvas={selectedCanvas}/>
+      <Sidebar selectedCanvas={selectedCanvas} />
       <main>
-        <div className="flex flex-row mt-6 space-x-3 items-center mb-4">
-        <button
-          onClick={addNewCanvas}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Add Canvas
-        </button>
-        <button
-          onClick={deleteCanvas}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Delete Active Canvas
-        </button>
-        <button
-          onClick={addText}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Add Text
-        </button>
-        <select
-          onChange={(e) => setDevIndex(Number(e.target.value))}
-          className="px-2 py-2 border rounded"
-        >
-          {devices.map((device, index: number) => (
-            <option key={index} value={index}>{device.name}</option>
-          ))}
-        </select>
-        <button
-          onClick={addFrame}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Add Frame
-        </button>
-        <button
-          onClick={() => addNewImageToActiveFrame(userImageURL)}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Add Inner Image
-        </button>
-      </div>
-      <div className="flex flex-row space-x-4 overflow-x-auto no-scrollbar px-auto">
-        {canvasItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => setSelectedCanvasId(item.id)}
-            className={`p-2 ${item.id === selectedCanvasId ? "border-2 border-blue-500" : ""}`}
+        <div className="flex flex-row mt-26 space-x-3 items-center mb-4">
+          <button
+            onClick={addNewCanvas}
+            className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
           >
-            <CanvasComponent id={item.id} onCanvasReady={handleCanvasReady} />
+            Add Canvas
+          </button>
+          <button
+            onClick={deleteCanvas}
+            className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Delete Active Canvas
+          </button>
+          <button
+            onClick={addText}
+            className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Add Text
+          </button>
+          <select
+            onChange={(e) => setDevIndex(Number(e.target.value))}
+            className="px-2 py-2 text-sm border rounded"
+          >
+            {devices.map((device, index: number) => (
+              <option key={index} value={index}>{device.name}</option>
+            ))}
+          </select>
+          <button
+            onClick={addFrame}
+            className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Add Frame
+          </button>
+          <button
+            onClick={() =>
+              loadMockUp()
+              // addNewImageToActiveFrame(userImageURL)
+            }
+            className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Add Inner Image
+          </button>
+          <div className="flex flex-col gap-1">
+            <button
+              onClick={exportCanvas}
+              className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Export Canvas
+            </button>
+            <button
+              onClick={exportAllCanvas}
+              className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Export All
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+        <div className="flex flex-row space-x-4 overflow-x-auto no-scrollbar px-auto">
+          {canvasItems.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => setSelectedCanvasId(item.id)}
+              className={`p-2 ${item.id === selectedCanvasId ? "border-2 border-blue-500" : ""}`}
+            >
+              <CanvasComponent height={90} width={450} id={item.id} onCanvasReady={handleCanvasReady} />
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );

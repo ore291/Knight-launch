@@ -1,4 +1,4 @@
-import type { TFiller } from "fabric";
+import type { Canvas, TFiller } from "fabric";
 
 export interface DeviceFrame {
   id: string;
@@ -40,3 +40,38 @@ export interface Background {
 export interface DragEvent extends React.DragEvent<HTMLDivElement> {
   dataTransfer: DataTransfer;
 }
+
+export interface DeviceType {
+  name: string;
+  type: "iphone" | "android" | "tab";
+  width: number;
+  height: number;
+  imageUrl: string;
+}
+
+export interface CanvasItem {
+  id: string;
+  canvas?: Canvas;
+}
+
+export  interface layoutType {
+        id: number;
+        text: {
+            value: string;
+            left?: number;
+            top?: number;
+            originX?: string;
+            fontSize?: number;
+            fill?: string;
+        };
+        frame: {
+            url: string;
+            originX?: string;
+            originY?: string;
+            left: number;
+            top: number;
+            scaleX?: number;
+            scaleY?: number;
+            angle?:number
+        };
+    }

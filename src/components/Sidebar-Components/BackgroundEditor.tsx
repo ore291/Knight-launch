@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Canvas, FabricText, type TFiller } from "fabric";
-import ScreenshotManager from "../editor/ScreenshotManager";
+
 
 interface BackgroundEditorProps {
   selectedCanvas: Canvas | undefined;

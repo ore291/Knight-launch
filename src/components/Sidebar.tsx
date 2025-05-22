@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Canvas } from "fabric";
 import { TextEditor } from "./Sidebar-Components/TextEditor";
 import { BackgroundEditor } from "./Sidebar-Components/BackgroundEditor";
-
+import { LayoutEditor } from "./Sidebar-Components/LayoutEditor";
 
 
 
@@ -32,7 +32,11 @@ export default function Sidebar({ selectedCanvas }: SidebarProps) {
         <BackgroundEditor selectedCanvas={selectedCanvas} />
       </div>
       break;
-
+    case 3:
+      active = <div>
+        <LayoutEditor selectedCanvas={selectedCanvas} />
+      </div>
+      break;
     default:
       break;
   }
@@ -56,7 +60,7 @@ export default function Sidebar({ selectedCanvas }: SidebarProps) {
             className={`opacity-50 cursor-pointer px-3 py-2 text-xs whitespace-nowrap ${getActiveClass(3, 'bg-[#eeeded] !opacity-100')}`}
             onClick={() => toggleTab(3)}
           >
-            Text
+            layout
           </li>
           <li
             className={`opacity-50 cursor-pointer px-3 py-2 text-xs whitespace-nowrap ${getActiveClass(4, 'bg-[#eeeded] !opacity-100')}`}

@@ -5,7 +5,7 @@ import CreateProject from './pages/CreateProject';
 import ProjectPage from './pages/ProjectPage';
 import { Routes, Route } from "react-router";
 import TestPage from './pages/TestPage';
-
+import {PhoneMockup} from './pages/MockUp';
 
 
 function App() {
@@ -13,9 +13,10 @@ function App() {
 
   return (
     <>
-   
-      <TestPage/>
-  
+
+       <TestPage/>
+     
+      <PhoneMockup />
       {/* <div className="h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-1">
