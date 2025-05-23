@@ -14,9 +14,9 @@ function App() {
   return (
     <>
 
-       <TestPage/>
+       <TestPage />
      
-      <PhoneMockup />
+      {/* <PhoneMockup /> */}
       {/* <div className="h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-1">

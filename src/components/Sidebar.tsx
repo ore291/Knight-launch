@@ -41,7 +41,7 @@ export default function Sidebar({ selectedCanvas }: SidebarProps) {
       break;
   }
   return (
-    <aside className="w-70 bg-gray-100 h-screen  border-r overflow-y-auto py-4">
+    <aside className="w-70 min-w-70 bg-gray-100 h-screen  border-r overflow-y-auto py-4 ">
       <div className="w-full">
         <ul className="flex  justify-around max-w-full bg-gray-300  py-2">
           <li

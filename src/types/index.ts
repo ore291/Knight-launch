@@ -47,6 +47,8 @@ export interface DeviceType {
   width: number;
   height: number;
   imageUrl: string;
+  rx?:number
+  ry?:number
 }
 
 export interface CanvasItem {

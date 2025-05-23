@@ -18,8 +18,8 @@ export const CanvasComponent: React.FC<{
     useEffect(() => {
         if (canvasRef.current) {
             const fabricCanvas = new Canvas(canvasRef.current, {
-                width: width || 322.5,
-                height: height || 600,
+                width: width || 222.5,
+                height: height || 400,
                 preserveObjectStacking: true,
             });
             fabricCanvas.backgroundColor = bgColor || "#1a1a1b";
