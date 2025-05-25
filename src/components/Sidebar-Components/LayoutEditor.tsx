@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, FabricText, IText } from "fabric";
+import { Canvas, FabricImage, IText } from "fabric";
 import React, { useCallback, useEffect, useState } from "react";
 import { CanvasComponent } from "../CanvasComponent";
 import type { CanvasItem, layoutType } from "../../types";
@@ -10,7 +10,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
   selectedCanvas,
 }) => {
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([]);
-  const [selectedCanvasId, setSelectedCanvasId] = useState<string>("canvas-1");
+
   const layoutCanvasHeight = 140;
   const layoutCanvaswidth = 100;
 
@@ -221,15 +221,12 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
 
   return (
     <div className="grid grid-cols-2 p-4">
-      {layouts.map((item) => (
-        <div
-          key={item.id}
-          onClick={() => add(item)}
-          className={`p-2 w-1/2`}
-        >
+      {layouts.map((item, index) => (
+        <div key={item.id} onClick={() => add(item)} className={`p-2 `}>
           <CanvasComponent
             height={layoutCanvasHeight}
             items={item}
+            index={index}
             width={layoutCanvaswidth}
             id={`canvas-${item.id}`}
             onCanvasReady={handleCanvasReady}

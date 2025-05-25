@@ -1,24 +1,25 @@
-import {
-  Canvas,
-  FabricImage,
-  IText,
-  FabricObject,
-  FabricText,
-  Group,
-  Rect,
-} from "fabric";
-import { useRef, useEffect, useState, useCallback } from "react";
+import { Canvas, FabricImage, IText, Group, Rect } from "fabric";
+import { useState, useCallback, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { saveAs } from "file-saver";
 import { CanvasComponent } from "../components/CanvasComponent";
 import type { CanvasItem, DeviceType } from "../types";
-
+import { DragDropProvider } from "@dnd-kit/react";
+import { move } from "@dnd-kit/helpers";
+import { useAppContext } from "../context/AppContext";
 const TestPage = () => {
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([
     { id: "canvas-1" },
   ]);
+  const [sortedCanvasItems, setSortedCanvasItems] = useState<CanvasItem[]>([
+    { id: "canvas-1" },
+  ]);
   const [selectedCanvasId, setSelectedCanvasId] = useState<string>("canvas-1");
   const [devIndex, setDevIndex] = useState<number>(0);
+
+  var canvasWidth = 322.5;
+
+  var canvasHeight = 500;
 
   const devices: DeviceType[] = [
     {
@@ -27,6 +28,8 @@ const TestPage = () => {
       width: 322,
       height: 670,
       imageUrl: "/frames/iphone.png",
+      rx: 55,
+      ry: 55,
     },
     {
       name: "Google pixel",
@@ -34,6 +37,8 @@ const TestPage = () => {
       width: 277,
       height: 585,
       imageUrl: "/frames/pixel.png",
+      rx: 55,
+      ry: 55,
     },
     // {
     //   name: "Nexus9",
@@ -61,17 +66,19 @@ const TestPage = () => {
       type: "iphone",
       width: 395,
       height: 874,
-      rx: 55,
-      ry: 55,
+      rx: 95,
+      ry: 95,
       imageUrl: "/frames/iPhone16Pro.png",
     },
-    // {
-    //   name: "Samsung Galaxy A8",
-    //   type: "android",
-    //   width: 188,
-    //   height: 377,
-    //   imageUrl: "/frames/SamsungGalaxyA8.png",
-    // },
+    {
+      name: "Samsung Galaxy S21",
+      type: "android",
+      width: 1080,
+      height: 2390,
+      rx: 55,
+      ry: 55,
+      imageUrl: "/frames/samsung-galaxy-black.png",
+    },
     {
       name: "Tecno Pova neo",
       type: "android",
@@ -80,6 +87,24 @@ const TestPage = () => {
       rx: 55,
       ry: 55,
       imageUrl: "/frames/android2.png",
+    },
+    {
+      name: "Ipad Air 4",
+      type: "tab",
+      width: 505,
+      height: 352,
+      rx: 0,
+      ry: 0,
+      imageUrl: "/frames/IpadAir4.png",
+    },
+    {
+      name: "Iphone 16 black",
+      type: "iphone",
+      width: 1315,
+      height: 2870,
+      rx: 95,
+      ry: 95,
+      imageUrl: "/frames/iphone-16-black.png",
     },
   ];
 
@@ -91,9 +116,19 @@ const TestPage = () => {
     (item) => item.id === selectedCanvasId
   )?.canvas;
 
+  // saves current device to global context
+  const { updateDevice } = useAppContext();
+  useEffect(() => {
+    updateDevice(device);
+    return () => {};
+  }, [devIndex]);
+
   // Callback to store the canvas instance when initialized
   const handleCanvasReady = useCallback((id: string, canvas: Canvas) => {
     setCanvasItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, canvas } : item))
+    );
+    setSortedCanvasItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, canvas } : item))
     );
   }, []);
@@ -131,7 +166,7 @@ const TestPage = () => {
     // Optional: Set export scale for higher resolution (e.g., 2x for retina)
     const scale = 3;
     let urls: { download: string; filename: string }[] = [];
-    canvasItems.forEach((item, index) => {
+    sortedCanvasItems.forEach((item, index) => {
       // Generate data URL
       const dataURL = item?.canvas?.toDataURL({
         format: "png", // Use 'jpeg' for smaller file size
@@ -156,15 +191,18 @@ const TestPage = () => {
 
   // Add a new canvas
   const addNewCanvas = () => {
-    const newId = `canvas-${Date.now()}`;
+    const newId = `canvas-${canvasItems.length + 1}`;
     setCanvasItems((prev) => [...prev, { id: newId }]);
+    setSortedCanvasItems((prev) => [...prev, { id: newId }]);
     setSelectedCanvasId(newId);
   };
-  const deleteCanvas = () => {
-    const newCanvasItems = canvasItems.filter(
-      (canvas) => canvas.id !== selectedCanvasId
+  const deleteCanvas = (id: string) => {
+    const newCanvasItems = canvasItems.filter((canvas) => canvas.id !== id);
+    const newSortedCanvasItems = sortedCanvasItems.filter(
+      (canvas) => canvas.id !== id
     );
     setCanvasItems(newCanvasItems);
+    setSortedCanvasItems(newSortedCanvasItems);
     setSelectedCanvasId(newCanvasItems[0].id);
   };
 
@@ -205,6 +243,10 @@ const TestPage = () => {
       scaleY: scale,
       selectable: true,
       hasControls: false,
+      lockScalingX: true,
+      lockScalingY: true,
+      lockMovementX: true, // Disables horizontal movement
+      lockMovementY: true,
       hasBorders: true,
     });
 
@@ -216,9 +258,9 @@ const TestPage = () => {
   async function addNewImageToActiveFrame(
     imageURL: string,
     screenWidth: number = device.width,
-    screenHeight: number = device.height,
-    screenOffsetX: number = 0,
-    screenOffsetY: number = 0
+    screenHeight: number = device.height
+    // screenOffsetX: number = 0,
+    // screenOffsetY: number = 0
   ): Promise<void> {
     if (!selectedCanvas) {
       alert("Please select a canvas first.");
@@ -237,8 +279,8 @@ const TestPage = () => {
     const frameScaleX = frame.scaleX || 1;
     const frameScaleY = frame.scaleY || 1;
 
-    const screenCenterX = frame.left! + screenOffsetX * frameScaleX;
-    const screenCenterY = frame.top! + screenOffsetY * frameScaleY;
+    // const screenCenterX = frame.left! + screenOffsetX * frameScaleX;
+    // const screenCenterY = frame.top! + screenOffsetY * frameScaleY;
     let scale;
     switch (device.type) {
       case "tab":
@@ -285,7 +327,6 @@ const TestPage = () => {
 
     innerImg.clipPath = clipRect;
 
-   
     const clonedFrame = await frame.clone();
     selectedCanvas.remove(frame);
     const group = new Group([innerImg, clonedFrame], {
@@ -294,10 +335,13 @@ const TestPage = () => {
       left: frame.left,
       top: frame.top,
       selectable: true,
+      angle: frame.angle,
+      hasControls: false,
       lockScalingX: true,
       lockScalingY: true,
       lockMovementX: true, // Disables horizontal movement
       lockMovementY: true,
+      lockRotation: true,
     });
     selectedCanvas.add(group);
     selectedCanvas.sendObjectToBack(innerImg);
@@ -309,8 +353,8 @@ const TestPage = () => {
   return (
     <div className="flex gap-4  w-full h-screen  no-scrollbar items-center">
       <Sidebar selectedCanvas={selectedCanvas} />
-      <main className="max-h-screen overflow-auto no-scrollbar">
-        <div className="flex flex-row mt-6 space-x-3 items-center mb-4">
+      <main className="max-h-screen relative overflow-auto no-scrollbar">
+        <header className="flex  top-0 w-full flex-row mb-1 space-x-3 items-center ">
           <button
             onClick={addNewCanvas}
             className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -318,7 +362,7 @@ const TestPage = () => {
             Add Canvas
           </button>
           <button
-            onClick={deleteCanvas}
+            onClick={()=>deleteCanvas(selectedCanvasId)}
             className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
           >
             Delete Active Canvas
@@ -330,7 +374,10 @@ const TestPage = () => {
             Add Text
           </button>
           <select
-            onChange={(e) => setDevIndex(Number(e.target.value))}
+            onChange={(e) => {
+              setDevIndex(Number(e.target.value));
+              updateDevice(devices[devIndex]);
+            }}
             className="px-2 py-2 text-sm border rounded"
           >
             {devices.map((device, index: number) => (
@@ -346,10 +393,7 @@ const TestPage = () => {
             Add Frame
           </button>
           <button
-            onClick={() =>
-              // loadMockUp()
-              addNewImageToActiveFrame(userImageURL)
-            }
+            onClick={() => addNewImageToActiveFrame(userImageURL)}
             className="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
           >
             Add Inner Image
@@ -368,20 +412,29 @@ const TestPage = () => {
               Export All
             </button>
           </div>
-        </div>
-        <div className="flex flex-row space-x-4 overflow-x-auto  px-auto">
-          {canvasItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedCanvasId(item.id)}
-              className={`p-2 ${
-                item.id === selectedCanvasId ? "border-2 border-blue-500" : ""
-              }`}
-            >
-              <CanvasComponent id={item.id} onCanvasReady={handleCanvasReady} />
-            </div>
-          ))}
-        </div>
+        </header>
+        <DragDropProvider
+          onDragEnd={(event) => {
+            setSortedCanvasItems((items) => move(items, event));
+          }}
+        >
+          <div className="!flex overflow-auto no-scrollbar flex-row max-w-screen">
+            {canvasItems.map((item, index) => (
+              <CanvasComponent
+                key={index}
+                width={canvasWidth}
+                height={canvasHeight}
+                deleteCanvas={deleteCanvas}
+                onClick={() => setSelectedCanvasId(item.id)}
+                isActive={item.id === selectedCanvasId}
+                className={`p-2  `}
+                id={item.id}
+                index={index}
+                onCanvasReady={handleCanvasReady}
+              />
+            ))}
+          </div>
+        </DragDropProvider>
       </main>
     </div>
   );
