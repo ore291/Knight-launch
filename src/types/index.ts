@@ -1,5 +1,6 @@
 import type { Canvas, TFiller } from "fabric";
 
+
 export interface DeviceFrame {
   id: string;
   name: string;
@@ -47,11 +48,30 @@ export interface DeviceType {
   width: number;
   height: number;
   imageUrl: string;
+  rx?:number
+  ry?:number
 }
 
 export interface CanvasItem {
   id: string;
   canvas?: Canvas;
+}
+
+export interface CanvasComponentProps{
+  
+  id: string;
+  index: number;
+  onClick ?: () => void;
+  deleteCanvas:(id:string)=>void
+  onCanvasReady: (id: string, canvas: Canvas) => void;
+  isActive ?: boolean;
+  width ?: number;
+  height ?: number;
+  bgColor ?: string;
+  items ?: layoutType;
+  className ?: string;
+  // selectedCanvas?: Canvas | undefined;
+
 }
 
 export  interface layoutType {

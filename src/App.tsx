@@ -6,17 +6,16 @@ import ProjectPage from './pages/ProjectPage';
 import { Routes, Route } from "react-router";
 import TestPage from './pages/TestPage';
 import {PhoneMockup} from './pages/MockUp';
-
+import { DragDropProvider } from "@dnd-kit/react";
 
 function App() {
 
 
   return (
     <>
+      <TestPage />
 
-       <TestPage/>
-     
-      <PhoneMockup />
+      {/* <PhoneMockup /> */}
       {/* <div className="h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-1">
@@ -32,7 +31,7 @@ function App() {
         </div>
       </div> */}
     </>
-  )
+  );
 }
 
 export default App
