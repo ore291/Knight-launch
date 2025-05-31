@@ -43,13 +43,19 @@ export interface DragEvent extends React.DragEvent<HTMLDivElement> {
 }
 
 export interface DeviceType {
+  id?: string;
   name: string;
+  category: string;
+  icon: React.ElementType;
+  popular?: boolean;
+  dimensions?: string;
   type: "iphone" | "android" | "tab";
   width: number;
   height: number;
   imageUrl: string;
   rx?:number
   ry?:number
+
 }
 
 export interface CanvasItem {

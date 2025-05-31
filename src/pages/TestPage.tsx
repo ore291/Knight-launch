@@ -7,6 +7,7 @@ import type { CanvasItem, DeviceType } from "../types";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import { useAppContext } from "../context/AppContext";
+import { Smartphone } from "lucide-react";
 const TestPage = () => {
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([
     { id: "canvas-1" },
@@ -22,24 +23,24 @@ const TestPage = () => {
   var canvasHeight = 500;
 
   const devices: DeviceType[] = [
-    {
-      name: "iphone 11",
-      type: "iphone",
-      width: 322,
-      height: 670,
-      imageUrl: "/frames/iphone.png",
-      rx: 55,
-      ry: 55,
-    },
-    {
-      name: "Google pixel",
-      type: "android",
-      width: 277,
-      height: 585,
-      imageUrl: "/frames/pixel.png",
-      rx: 55,
-      ry: 55,
-    },
+    // {
+    //   name: "iphone 11",
+    //   type: "iphone",
+    //   width: 322,
+    //   height: 670,
+    //   imageUrl: "/frames/iphone.png",
+    //   rx: 55,
+    //   ry: 55,
+    // },
+    // {
+    //   name: "Google pixel",
+    //   type: "android",
+    //   width: 277,
+    //   height: 585,
+    //   imageUrl: "/frames/pixel.png",
+    //   rx: 55,
+    //   ry: 55,
+    // },
     // {
     //   name: "Nexus9",
     //   type: "tab",
@@ -47,13 +48,13 @@ const TestPage = () => {
     //   height: 520,
     //   imageUrl: "/frames/nexus9.png",
     // },
-    {
-      name: "Samsung Galaxy",
-      type: "android",
-      width: 360,
-      height: 760,
-      imageUrl: "/frames/samsungS10.png",
-    },
+    // {
+    //   name: "Samsung Galaxy",
+    //   type: "android",
+    //   width: 360,
+    //   height: 760,
+    //   imageUrl: "/frames/samsungS10.png",
+    // },
     // {
     //   name: "iphone 8",
     //   type: "iphone",
@@ -61,49 +62,52 @@ const TestPage = () => {
     //   height: 340,
     //   imageUrl: "/frames/iPhone8.png",
     // },
-    {
-      name: "iphone 16 pro",
-      type: "iphone",
-      width: 395,
-      height: 874,
-      rx: 95,
-      ry: 95,
-      imageUrl: "/frames/iPhone16Pro.png",
-    },
-    {
-      name: "Samsung Galaxy S21",
-      type: "android",
-      width: 1080,
-      height: 2390,
-      rx: 55,
-      ry: 55,
-      imageUrl: "/frames/samsung-galaxy-black.png",
-    },
-    {
-      name: "Tecno Pova neo",
-      type: "android",
-      width: 249,
-      height: 559,
-      rx: 55,
-      ry: 55,
-      imageUrl: "/frames/android2.png",
-    },
-    {
-      name: "Ipad Air 4",
-      type: "tab",
-      width: 505,
-      height: 352,
-      rx: 0,
-      ry: 0,
-      imageUrl: "/frames/IpadAir4.png",
-    },
+    // {
+    //   name: "iphone 16 pro",
+    //   type: "iphone",
+    //   width: 395,
+    //   height: 874,
+    //   rx: 95,
+    //   ry: 95,
+    //   imageUrl: "/frames/iPhone16Pro.png",
+    // },
+    // {
+    //   name: "Samsung Galaxy S21",
+    //   type: "android",
+    //   width: 1080,
+    //   height: 2390,
+    //   rx: 55,
+    //   ry: 55,
+    //   imageUrl: "/frames/samsung-galaxy-black.png",
+    // },
+    // {
+    //   name: "Tecno Pova neo",
+    //   type: "android",
+    //   width: 249,
+    //   height: 559,
+    //   rx: 55,
+    //   ry: 55,
+    //   imageUrl: "/frames/android2.png",
+    // },
+    // {
+    //   name: "Ipad Air 4",
+    //   type: "tab",
+    //   width: 505,
+    //   height: 352,
+    //   rx: 0,
+    //   ry: 0,
+    //   imageUrl: "/frames/IpadAir4.png",
+    // },
     {
       name: "Iphone 16 black",
       type: "iphone",
       width: 1315,
       height: 2870,
+      category: "Phone",
+      icon: Smartphone,
       rx: 95,
       ry: 95,
+      
       imageUrl: "/frames/iphone-16-black.png",
     },
   ];
@@ -140,7 +144,7 @@ const TestPage = () => {
     }
 
     // Optional: Set export scale for higher resolution (e.g., 2x for retina)
-    const scale = 3;
+    const scale = 6;
 
     // Generate data URL
     const dataURL = selectedCanvas.toDataURL({
@@ -164,7 +168,7 @@ const TestPage = () => {
     }
 
     // Optional: Set export scale for higher resolution (e.g., 2x for retina)
-    const scale = 3;
+    const scale = 6;
     let urls: { download: string; filename: string }[] = [];
     sortedCanvasItems.forEach((item, index) => {
       // Generate data URL

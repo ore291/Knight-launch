@@ -1,14 +1,12 @@
 import React, { useState, useEffect, type ChangeEvent, useRef } from "react";
 import { FabricImage, type Canvas, Rect, Group } from "fabric";
 import { X } from "lucide-react";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 import { Upload } from "lucide-react";
-interface ImageEditorrProps {
+interface ImageSelectorProps {
   selectedCanvas: Canvas | undefined;
 }
-export const ImageEditor: React.FC<ImageEditorrProps> = ({
-  selectedCanvas,
-}) => {
+export const ImageSelector: React.FC<ImageSelectorProps> = ({ selectedCanvas }) => {
   const [images, setImages] = useState<string[]>([]);
 
   const { device } = useAppContext();
@@ -50,9 +48,9 @@ export const ImageEditor: React.FC<ImageEditorrProps> = ({
         }
 
         // Calculate scaling factor
-        const scaleX = minWidth / width;
-        const scaleY = minHeight / height;
-        const scale = Math.max(scaleX, scaleY);
+        // const scaleX = minWidth / width;
+        // const scaleY = minHeight / height;
+        // const scale = Math.max(scaleX, scaleY);
 
         const canvas = document.createElement("canvas");
         canvas.width = 800;
@@ -185,17 +183,17 @@ export const ImageEditor: React.FC<ImageEditorrProps> = ({
       if (!event.target.files) {
         return;
       }
-       if (event.target.files[0].size > 1024*1024)// 1mb in bytes
-        {
-         alert("File is too big!");
-         event.target.value = "";
-         return;
-       }
-       if (images.length >= 5) {
-         alert("Can only upload 5 images!");
-         event.target.value = "";
-         return;
-       }
+      if (event.target.files[0].size > 1024 * 1024) {
+        // 1mb in bytes
+        alert("File is too big!");
+        event.target.value = "";
+        return;
+      }
+      if (images.length >= 5) {
+        alert("Can only upload 5 images!");
+        event.target.value = "";
+        return;
+      }
       const file = event.target?.files[0];
 
       if (file && file.type.startsWith("image/")) {
@@ -237,7 +235,7 @@ export const ImageEditor: React.FC<ImageEditorrProps> = ({
           Upload Image
         </button>
         <label className="text-xs text-gray-500 font-bold p-0" htmlFor="">
-          max file size :1MB  max images: 5
+          max file size :1MB max images: 5
         </label>
         <input
           type="file"
@@ -252,7 +250,7 @@ export const ImageEditor: React.FC<ImageEditorrProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center  bg-gray-100 p-4">
+    <div className="flex flex-col items-center justify-center">
       {/* <h1 className="text-2xl font-bold mb-4">Image Uploader</h1> */}
       {/* <input
         type="file"
@@ -268,7 +266,7 @@ export const ImageEditor: React.FC<ImageEditorrProps> = ({
               src={src}
               onClick={() => addNewImageToActiveFrame(src)}
               alt={`Uploaded ${index}`}
-              className="w-48 h-48 object-cover rounded shadow"
+              className="w-48 cursor-pointer h-48 object-cover rounded shadow"
             />
             <button
               onClick={() => handleRemoveImage(index)}

@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { ArrowLeftRight, Trash2 } from "lucide-react";
 import type { CanvasComponentProps } from "../types";
-
+import { Tooltip } from "./ui/tooltip";
 // Reusable Canvas Component
 export const CanvasComponent: React.FC<CanvasComponentProps> = React.memo(
   ({
@@ -20,7 +20,7 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = React.memo(
     items,
   }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-     const fabricCanvasRef = useRef<HTMLDivElement>(null);
+    const fabricCanvasRef = useRef<HTMLDivElement>(null);
     const { ref, handleRef } = useSortable({
       id,
       index,
@@ -86,25 +86,31 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = React.memo(
 
     return (
       <div
-        className={className}
+        className={` p-2 ${className} ${
+          isActive ? "border border-blue-500" : ""
+        } `}
         onClick={onClick}
         ref={!items?.text && !items?.frame ? ref : fabricCanvasRef}
       >
-        <div className={`p-2 ${isActive ? "border-2 border-blue-500" : ""} `}>
-          {id}
+        <div>
+          {/* {id} */}
           <canvas ref={canvasRef} />
         </div>
         {!items?.text && !items?.frame && (
           <div className="flex space-x-4 justify-end mt-2 ">
-            <button
-              className="cursor-pointer text-gray-500"
-              onClick={() => deleteCanvas(id)}
-            >
-              <Trash2 />
-            </button>
-            <button className="cursor-pointer text-gray-500" ref={handleRef}>
-              <ArrowLeftRight />
-            </button>
+            <Tooltip text="Delete Canvas" placement="bottom">
+              <button
+                className="cursor-pointer text-gray-500"
+                onClick={() => deleteCanvas(id)}
+              >
+                <Trash2 />
+              </button>
+            </Tooltip>
+            <Tooltip text="Move Canvas" placement="bottom">
+              <button className="cursor-pointer text-gray-500" ref={handleRef}>
+                <ArrowLeftRight />
+              </button>
+            </Tooltip>
           </div>
         )}
       </div>

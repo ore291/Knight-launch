@@ -16,3 +16,7 @@
   border-style: dashed;
   border: 4px red;
 }
+
+button {
+  cursor: pointer;
+}

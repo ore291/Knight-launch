@@ -1,12 +1,12 @@
 import { Canvas, FabricImage, IText } from "fabric";
 import React, { useCallback, useEffect, useState } from "react";
-import { CanvasComponent } from "../CanvasComponent";
-import type { CanvasItem, layoutType } from "../../types";
-
-interface LayoutEditorProps {
-  selectedCanvas: Canvas|undefined;
+import { CanvasComponent } from "../../../components/CanvasComponent";
+import type { CanvasItem, layoutType } from "../../../types";
+import { useAppContext } from "../../../context/AppContext";
+interface LayoutSelectorProps {
+  selectedCanvas: Canvas | undefined;
 }
-export const LayoutEditor: React.FC<LayoutEditorProps> = ({
+export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   selectedCanvas,
 }) => {
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([]);
@@ -15,10 +15,10 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
   const layoutCanvaswidth = 100;
 
   const add = async (items: layoutType) => {
-      if (!selectedCanvas) {
-        alert("No canvas selected!");
-        return;
-      }
+    if (!selectedCanvas) {
+      alert("No canvas selected!");
+      return;
+    }
     const text = new IText(items.text.value, {
       originX: "center",
       left: selectedCanvas?.getWidth() / 2,
@@ -58,6 +58,10 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
     selectedCanvas?.add(text);
   };
 
+  const {device} =useAppContext()
+
+  const currentDeviceImg = device.imageUrl
+
   const layouts: layoutType[] = [
     {
       id: 1,
@@ -70,7 +74,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: 50,
@@ -90,7 +94,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: 90,
@@ -110,7 +114,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: 95,
@@ -131,7 +135,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: -5,
@@ -152,7 +156,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: 50,
@@ -173,7 +177,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: 50,
@@ -194,7 +198,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
         fill: "#FFFFFF",
       },
       frame: {
-        url: "/frames/iphone.png",
+        url: currentDeviceImg,
         originX: "center",
         originY: "center",
         left: -10,
@@ -220,12 +224,12 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({
   }, []);
 
   return (
-    <div className="grid grid-cols-2 p-4">
+    <div className="grid grid-cols-2 gap-1">
       {layouts.map((item, index) => (
-        <div key={item.id} onClick={() => add(item)} className={`p-2 `}>
+        <div key={item.id} onClick={() => add(item)} className={`p- `}>
           <CanvasComponent
             height={layoutCanvasHeight}
-            deleteCanvas={()=>{}}
+            deleteCanvas={() => {}}
             items={item}
             index={index}
             width={layoutCanvaswidth}

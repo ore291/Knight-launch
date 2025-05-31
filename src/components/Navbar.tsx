@@ -2,7 +2,7 @@ import { NavLink } from 'react-router';
 
 export default function Navbar() {
   return (
-    <nav className="flex justify-between items-center h-16 px-6 border-b bg-white shadow-sm py-4">
+    <nav className="flex justify-between items-center h-12 px-6 border-b border-gray-300 bg-white shadow-sm py-4">
       <NavLink to={'/'}><div className="text-xl font-bold">Knight Launch</div></NavLink>
       <div className="flex items-center gap-4">
        
