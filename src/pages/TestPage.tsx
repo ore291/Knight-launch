@@ -378,10 +378,10 @@ const TestPage = () => {
             Add Text
           </button>
           <select
-            onChange={(e) => {
-              setDevIndex(Number(e.target.value));
-              updateDevice(devices[devIndex]);
-            }}
+            // onChange={(e) => {
+            //   setDevIndex(Number(e.target.value));
+            //   updateDevice(devices[devIndex]);
+            // }}
             className="px-2 py-2 text-sm border rounded"
           >
             {devices.map((device, index: number) => (

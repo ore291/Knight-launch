@@ -10,6 +10,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
   const [fontSize, setFontSize] = useState<number>();
   const [selText, setSelText] = useState<string>();
   const [fontFamily, setFontFamily] = useState<string>();
+   const [fontWeight, setFontWeight] = useState<string>("normal");
   const [lineHeight, setLineHeight] = useState<number>();
   const [strokeColor, setStrokeColor] = useState<string | TFiller>("#000000");
   const [backgroundColor, setBackgroundColor] = useState<string | TFiller>(
@@ -21,7 +22,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
     const activeObject = selectedCanvas?.getActiveObject();
     if (activeObject && activeObject instanceof FabricText) {
       setSelectedText(activeObject);
-      setIsActive(activeObject ? true : false);
+      setIsActive(true);
+    }else{
+      setIsActive(false)
     }
 
     return () => {};
@@ -30,11 +33,11 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
   useEffect(() => {
     if (!selectedCanvas) return;
 
-    const handleSelection = (e: any) => {
+    const handleSelection = () => {
       const activeObject = selectedCanvas.getActiveObject();
       if (activeObject && activeObject instanceof FabricText) {
         setSelectedText(activeObject);
-
+        setIsActive(true);
         setFontSize(activeObject?.fontSize);
         setSelText(activeObject?.text);
         setFontFamily(activeObject?.fontFamily);
@@ -62,9 +65,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
     return <div className="p-4">Select a canvas to edit text.</div>;
   }
 
-  // if (!selectedText) {
-  //   return <div className="p-4">Select a text object to edit.</div>;
-  // }
 
   const updateTextProperty = (property: string, value: any) => {
     if (selectedText) {
@@ -91,6 +91,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
           className={`w-full p-2 border rounded ${!isActive && "opacity-50"}`}
         />
       </div>
+
       <div className="mb-2">
         <label
           className={`block text-sm font-medium ${!isActive && "opacity-50"}`}
@@ -121,6 +122,35 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
           disabled={!isActive}
           id="text-font-size"
         />
+      </div>
+      <div className="mb-2">
+        <label
+          className={`block text-sm font-medium ${!isActive && "opacity-50"}`}
+        >
+          Font Weight
+        </label>
+        <select
+          value={fontWeight}
+          onChange={(e) => {
+            setFontWeight(e.target.value);
+            updateTextProperty("fontWeight", e.target.value);
+          }}
+          disabled={!isActive}
+          className={`w-full p-2 border rounded ${!isActive && "opacity-50"}`}
+        >
+          <option value="normal">Normal</option>
+          <option value="bold">Bold</option>
+          <option value="lighter">Lighter</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="300">300</option>
+          <option value="400">400</option>
+          <option value="500">500</option>
+          <option value="600">600</option>
+          <option value="700">700</option>
+          <option value="800">800</option>
+          <option value="900">900</option>
+        </select>
       </div>
       <div className="mb-2">
         <label

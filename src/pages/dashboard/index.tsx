@@ -5,25 +5,26 @@ import {
   type WheelEvent,
   useCallback,
 } from "react";
-import { ZoomIn, ZoomOut } from "lucide-react";
+
+import { ZoomIn, ZoomOut, Plus, Trash2, Type } from "lucide-react";
 import LeftSidebar from "./LeftSidebar";
-import { Canvas, FabricImage, IText, Group, Rect } from "fabric";
+import { Canvas, FabricImage, IText, Group } from "fabric";
 import {
   TransformWrapper,
   TransformComponent,
   useControls,
-  useTransformContext,
 } from "react-zoom-pan-pinch";
 import { saveAs } from "file-saver";
 import { CanvasComponent } from "../../components/CanvasComponent";
-import type { CanvasItem, DeviceType } from "../../types";
+import type { CanvasItem } from "../../types";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { useAppContext } from "../../context/AppContext";
+import { devices } from "./utils/devices";
 import RightSidebar from "./RightSidebar";
-
+import { Tooltip } from "../../components/ui/tooltip";
+import { useAppContext } from "../../context/AppContext";
 export default function Dashboard() {
-  const [zoom, setZoom] = useState<number>(0.7);
+  const [zoom, setZoom] = useState<number>(0.5);
   const canvasAreaRef = useRef<HTMLDivElement | null>(null);
   const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([
     { id: "canvas-1" },
@@ -35,7 +36,9 @@ export default function Dashboard() {
 
   var canvasHeight = 500;
   const [selectedCanvasId, setSelectedCanvasId] = useState<string>("canvas-1");
-
+  const [isDeletable, setIsDeletable] = useState(false);
+  const [isTextActive, setIsTextActive] = useState(false);
+  const { updateDevice } = useAppContext();
   // Get the currently selected canvas
   const selectedCanvas = canvasItems.find(
     (item) => item.id === selectedCanvasId
@@ -47,7 +50,7 @@ export default function Dashboard() {
       <div className="absolute top-2 right-4 z-50 space-x-2 flex items-center">
         <button
           onClick={() => {
-            zoomOut(0.09);
+            zoomOut(0.35);
           }}
           className="p-2 rounded"
         >
@@ -56,7 +59,7 @@ export default function Dashboard() {
         <span className="text-sm">{Math.round(zoom * 100)}%</span>
         <button
           onClick={() => {
-            zoomIn(0.09);
+            zoomIn(0.35);
           }}
           className="p-2 rounded"
         >
@@ -140,7 +143,29 @@ export default function Dashboard() {
     setSortedCanvasItems(newSortedCanvasItems);
     setSelectedCanvasId(newCanvasItems[0].id);
   };
-
+  const addText = () => {
+    if (!selectedCanvas) {
+      alert("Please select a canvas first.");
+      return;
+    }
+    const text = new IText("Insert your text here", {
+      originX: "center",
+      left: selectedCanvas.getWidth() / 2,
+      top: 30,
+      fontSize: 24,
+      hasControls: true,
+      fill: "#FFFFFF",
+    });
+    selectedCanvas.add(text);
+  };
+  function deleteFrame() {
+    const activeObject = selectedCanvas?.getActiveObject();
+    if (activeObject) {
+      selectedCanvas?.remove(activeObject);
+      selectedCanvas?.discardActiveObject(); // Optional: clears selection
+      selectedCanvas?.requestRenderAll(); // Re-render canvas
+    }
+  }
   useEffect(() => {
     const canvas = canvasAreaRef.current;
     if (!canvas) return;
@@ -160,7 +185,38 @@ export default function Dashboard() {
       );
     };
   }, []);
+  useEffect(() => {
+    if (!selectedCanvas) {
+      setIsDeletable(false);
+      setIsTextActive(false);
+      return;
+    }
 
+    const updateSelectionStatus = () => {
+      const activeObject = selectedCanvas.getActiveObject();
+      const isImage = activeObject instanceof FabricImage;
+      const isGroup = activeObject instanceof Group;
+      const isText = activeObject instanceof IText;
+
+      setIsDeletable(isImage || isGroup);
+      setIsTextActive(!!isText);
+    };
+
+    updateSelectionStatus();
+
+    selectedCanvas.on("selection:created", updateSelectionStatus);
+    selectedCanvas.on("selection:updated", updateSelectionStatus);
+    selectedCanvas.on("selection:cleared", () => {
+      setIsDeletable(false);
+      setIsTextActive(false);
+    });
+
+    return () => {
+      selectedCanvas.off("selection:created", updateSelectionStatus);
+      selectedCanvas.off("selection:updated", updateSelectionStatus);
+      selectedCanvas.off("selection:cleared", updateSelectionStatus);
+    };
+  }, [selectedCanvas]);
   return (
     <div className="flex h-screen no-scrollbar w-screen bg-gray-100">
       {/* Left Sidebar */}
@@ -178,27 +234,62 @@ export default function Dashboard() {
       {/* Main Area */}
       <main className="w-9/12 no-scrollbar overflow-x-scroll max-w-full relative">
         {/* Top Toolbar */}
-        <header className="flex items-center w-full justify-end bg-white border-b border-gray-100 p-2 gap-2 shadow-sm">
-          <button className="p-2 rounded opacity-0">
-            <ZoomOut />
-          </button>
-          {/* <span className="text-sm opacity-0">{Math.round(zoom * 100)}%</span> */}
-          <button className="p-2 rounded opacity-0">
-            <ZoomIn />
-          </button>
-        </header>
+        <div className="flex items-center w-full  bg-white border-b border-gray-100 p-2 gap-2 shadow-sm">
+          <header className="flex top-0 w-full flex-row mb-1 space-x-3 items-center">
+            <Tooltip text="Add Canvas">
+              <button
+                onClick={addNewCanvas}
+                className="px-4 py-2 text-sm  text-black bg-slate-100 rounded hover:"
+              >
+                <Plus size={18} />
+              </button>
+            </Tooltip>
+            <Tooltip text="Delete Frame">
+              <button
+                onClick={() => deleteFrame()}
+                disabled={!isDeletable}
+                className={`px-4 py-2 text-sm  text-black bg-slate-100 rounded  ${
+                  !isDeletable && "opacity-50 !cursor-not-allowed"
+                }`}
+              >
+                <Trash2 size={18} />
+              </button>
+            </Tooltip>
+            <Tooltip text="Add Text">
+              <button
+                onClick={addText}
+                className="px-4 py-2 text-sm  text-black bg-slate-100 rounded "
+              >
+                <Type size={18} />
+              </button>
+            </Tooltip>
+            {/* <select
+              onChange={(e) => {
+                // setDevIndex(Number(e.target.value));
+                updateDevice(devices[Number(e.target.value)]);
+              }}
+              className="px-2 py-2 text-sm border rounded"
+            >
+              {devices.map((device, index: number) => (
+                <option key={index} value={index}>
+                  {device.name}
+                </option>
+              ))}
+            </select> */}
+          </header>
+        </div>
         <div className=" ">
           <TransformWrapper
             initialScale={zoom}
-            minScale={0.4}
-            maxScale={4}
+            minScale={0.1}
+            maxScale={1}
             wheel={{
               step: 0.05,
               activationKeys: ["Control", "Meta"], // require Ctrl or Cmd key to zoom
             }}
             panning={{
               velocityDisabled: true,
-              disabled: true,
+              disabled: isTextActive,
             }}
             initialPositionX={10}
             initialPositionY={50}
@@ -212,37 +303,35 @@ export default function Dashboard() {
           >
             <ZoomControls />{" "}
             <TransformComponent
-              wrapperClass="!w-[60vw]  "
-              contentClass="no-scrollbar "
+              wrapperClass="!w-[59vw] f "
+              contentClass="no-scrollbar  "
             >
               {/* Canvas Area */}
-              <div className="  ">
-                <div className="  w-full  ">
-                  <div ref={canvasAreaRef}>
-                    <DragDropProvider
-                      onDragEnd={(event) => {
-                        setSortedCanvasItems((items) => move(items, event));
-                      }}
-                    >
-                      <div className="!flex flex-1/3 items-center overflow-scroll no-scrollbar ">
-                        {canvasItems.map((item, index) => (
-                          <CanvasComponent
-                            key={index}
-                            width={canvasWidth}
-                            height={canvasHeight}
-                            deleteCanvas={deleteCanvas}
-                            onClick={() => setSelectedCanvasId(item.id)}
-                            isActive={item.id === selectedCanvasId}
-                            className={`p-2  `}
-                            id={item.id}
-                            index={index}
-                            bgColor="black"
-                            onCanvasReady={handleCanvasReady}
-                          />
-                        ))}
-                      </div>
-                    </DragDropProvider>
-                  </div>
+              <div className="  w-full  ">
+                <div ref={canvasAreaRef}>
+                  <DragDropProvider
+                    onDragEnd={(event) => {
+                      setSortedCanvasItems((items) => move(items, event));
+                    }}
+                  >
+                    <div className="!flex flex-1/3 items-center overflow-scroll no-scrollbar ">
+                      {canvasItems.map((item, index) => (
+                        <CanvasComponent
+                          key={index}
+                          width={canvasWidth}
+                          height={canvasHeight}
+                          deleteCanvas={deleteCanvas}
+                          onClick={() => setSelectedCanvasId(item.id)}
+                          isActive={item.id === selectedCanvasId}
+                          className={`p-2  `}
+                          id={item.id}
+                          index={index}
+                          bgColor="black"
+                          onCanvasReady={handleCanvasReady}
+                        />
+                      ))}
+                    </div>
+                  </DragDropProvider>
                 </div>
               </div>
             </TransformComponent>

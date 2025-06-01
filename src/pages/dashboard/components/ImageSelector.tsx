@@ -6,7 +6,9 @@ import { Upload } from "lucide-react";
 interface ImageSelectorProps {
   selectedCanvas: Canvas | undefined;
 }
-export const ImageSelector: React.FC<ImageSelectorProps> = ({ selectedCanvas }) => {
+export const ImageSelector: React.FC<ImageSelectorProps> = ({
+  selectedCanvas,
+}) => {
   const [images, setImages] = useState<string[]>([]);
 
   const { device } = useAppContext();
@@ -88,6 +90,7 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({ selectedCanvas }) 
       return;
     }
     const frame = selectedCanvas.getActiveObject();
+   
     if (!frame || !(frame instanceof FabricImage)) {
       alert("Please select a phone frame image first.");
       return;
@@ -100,7 +103,6 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({ selectedCanvas }) 
 
     const imageWidth = innerImg.width || 0;
     const imageHeight = innerImg.height || 0;
-    console.log(imageWidth, imageHeight);
 
     let scale: number = 0;
 
@@ -149,24 +151,27 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({ selectedCanvas }) 
       left: frame.left,
       top: frame.top,
     });
-
     innerImg.clipPath = clipRect;
 
+   
     const clonedFrame = await frame.clone();
     selectedCanvas.remove(frame);
-    const group = new Group([innerImg, clonedFrame], {
+    const group = new Group([innerImg, clonedFrame,], {
       originX: "center",
       originY: "center",
       left: frame.left,
       top: frame.top,
       selectable: true,
-      angle: frame.angle,
+      // angle: frame.angle,
+      // angle:fa,
       hasControls: false,
+      hasBorders:false,
       lockScalingX: true,
       lockScalingY: true,
       lockMovementX: true, // Disables horizontal movement
       lockMovementY: true,
       lockRotation: true,
+     
     });
     selectedCanvas.add(group);
     selectedCanvas.sendObjectToBack(innerImg);

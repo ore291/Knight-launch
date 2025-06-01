@@ -101,7 +101,7 @@ export default function LeftSidebar({
 
             {/* Canvas Accordion */}
             <section>
-              <button
+              <div
                 // onClick={() => toggleAccordion("canvases")}
                 className="w-full flex justify-between items-center px-2 py-3 font-medium"
               >
@@ -111,7 +111,7 @@ export default function LeftSidebar({
                     <Plus className="w-4 h-4" />
                   </button>
                 </Tooltip>
-              </button>
+              </div>
 
               <div className="flex flex-col px-2 gap-y-2">
                 {canvasItems.map((item, index) => (

@@ -9,7 +9,7 @@ interface LayoutSelectorProps {
 export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   selectedCanvas,
 }) => {
-  const [canvasItems, setCanvasItems] = useState<CanvasItem[]>([]);
+  const [_, setCanvasItems] = useState<CanvasItem[]>([]);
 
   const layoutCanvasHeight = 140;
   const layoutCanvaswidth = 100;
@@ -58,9 +58,9 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
     selectedCanvas?.add(text);
   };
 
-  const {device} =useAppContext()
+  const { device } = useAppContext();
 
-  const currentDeviceImg = device.imageUrl
+  const currentDeviceImg = device.imageUrl;
 
   const layouts: layoutType[] = [
     {
@@ -139,7 +139,7 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
         originX: "center",
         originY: "center",
         left: -5,
-        top: 75,
+        top: 85,
         scaleX: 1,
         scaleY: 1,
         angle: 45,
@@ -210,7 +210,7 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
     },
   ];
   // Callback to store the canvas instance when initialized
-  const handleCanvasReady = useCallback((id: string, canvas: Canvas) => {}, []);
+  const handleCanvasReady = useCallback(() => {}, []);
   useEffect(() => {
     const setLayouts = () => {
       layouts.map((layout) => {
