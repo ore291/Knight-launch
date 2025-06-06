@@ -73,8 +73,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
     }
   };
   return (
-    <div className="">
-      <h2 className="text-lg font-bold mb-2">Edit Text {String(isActive)}</h2>
+    <div className="w-full mx-auto ">
+      <h2 className="text-lg font-bold mb-2">Edit Text </h2>
       <div className="mb-2">
         <label
           className={`block text-sm font-medium ${!isActive && "opacity-50"}`}
@@ -213,12 +213,13 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
             setFontFamily(e.target.value);
             updateTextProperty("fontFamily", e.target.value);
           }}
+          defaultValue={'helvetica'}
           disabled={!isActive}
           className={`w-full p-2 border rounded ${!isActive && "opacity-50"}`}
         >
           <option value="Arial">Arial</option>
           <option value="Times New Roman">Times New Roman</option>
-          <option value="helvetica" selected>
+          <option value="helvetica" >
             Helvetica
           </option>
           <option value="myriad pro">Myriad Pro</option>

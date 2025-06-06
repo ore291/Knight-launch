@@ -16,7 +16,7 @@ function App() {
       {/* <TestPage /> */}
 
       {/* <PhoneMockup /> */}
-      <div className="h-screen flex no-scrollbar flex-col">
+      <div className="max-h-screen max-w-screen overflow-x-auto overflow-y-hidden   flex no-scrollbar flex-col">
         {/* <Navbar /> */}
         <div className="flex flex-1 no-scrollbar">
           {/* <Sidebar /> */}

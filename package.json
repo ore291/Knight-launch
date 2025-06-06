@@ -21,6 +21,7 @@
     "dexie-react-hooks": "^1.1.7",
     "fabric": "^6.6.5",
     "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

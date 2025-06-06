@@ -1,4 +1,4 @@
-import { Smartphone, Tablet, ChevronDown } from "lucide-react";
+import {  ChevronDown } from "lucide-react";
 import {  useEffect, useState } from "react";
 import type { DeviceType } from "../../../types";
 import { useAppContext } from "../../../context/AppContext";

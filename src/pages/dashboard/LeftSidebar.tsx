@@ -29,7 +29,7 @@ export default function LeftSidebar({
   };
 
   return (
-    <div className="h-screen w-full bg-white ">
+    <div className="max-h-screen overflow-y-auto no-scrollbar w-full bg-white">
       {/* Tabs */}
       <div className="flex w-full">
         <button

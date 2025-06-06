@@ -19,10 +19,10 @@ import { CanvasComponent } from "../../components/CanvasComponent";
 import type { CanvasItem } from "../../types";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { devices } from "./utils/devices";
+import JSZip from "jszip";
 import RightSidebar from "./RightSidebar";
 import { Tooltip } from "../../components/ui/tooltip";
-import { useAppContext } from "../../context/AppContext";
+
 export default function Dashboard() {
   const [zoom, setZoom] = useState<number>(0.5);
   const canvasAreaRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [selectedCanvasId, setSelectedCanvasId] = useState<string>("canvas-1");
   const [isDeletable, setIsDeletable] = useState(false);
   const [isTextActive, setIsTextActive] = useState(false);
-  const { updateDevice } = useAppContext();
+ 
   // Get the currently selected canvas
   const selectedCanvas = canvasItems.find(
     (item) => item.id === selectedCanvasId
@@ -166,6 +166,40 @@ export default function Dashboard() {
       selectedCanvas?.requestRenderAll(); // Re-render canvas
     }
   }
+  const exportAllCanvas = async () => {
+    if (!selectedCanvas) {
+      alert("No canvas selected!");
+      return;
+    }
+
+    const scale = 6;
+    const zip = new JSZip();
+
+    // Loop over canvas items and add each to the ZIP
+    for (let index = 0; index < sortedCanvasItems.length; index++) {
+      const item = sortedCanvasItems[index];
+      const dataURL = item?.canvas?.toDataURL({
+        format: "png",
+        quality: 1,
+        multiplier: scale,
+      });
+
+      if (dataURL) {
+        // Convert Data URL to Blob
+        const blob = await fetch(dataURL).then((res) => res.blob());
+
+        // Add the file to the zip
+        zip.file(`project-name-${index + 1}.png`, blob);
+      }
+    }
+
+   try {
+     const zipBlob: Blob = await zip.generateAsync({ type: "blob" });
+     saveAs(zipBlob, "all-canvases.zip");
+   } catch (error) {
+     console.error("Failed to generate ZIP file:", error);
+   }
+  };
   useEffect(() => {
     const canvas = canvasAreaRef.current;
     if (!canvas) return;
@@ -218,7 +252,7 @@ export default function Dashboard() {
     };
   }, [selectedCanvas]);
   return (
-    <div className="flex h-screen no-scrollbar w-screen bg-gray-100">
+    <div className="flex  bg-gray-100">
       {/* Left Sidebar */}
       <aside className="w-3/12  bg-white border-r border-gray-100 p-4 shadow-sm max-h-screen no-scrollbar overflow-scroll">
         <h2 className="text-lg font-bold mb-4">Left Panel</h2>
@@ -303,7 +337,7 @@ export default function Dashboard() {
           >
             <ZoomControls />{" "}
             <TransformComponent
-              wrapperClass="!w-[59vw] f "
+              wrapperClass="!w-[59vw] "
               contentClass="no-scrollbar  "
             >
               {/* Canvas Area */}
@@ -326,7 +360,7 @@ export default function Dashboard() {
                           className={`p-2  `}
                           id={item.id}
                           index={index}
-                          bgColor="black"
+                          bgColor="#1a1a1b"
                           onCanvasReady={handleCanvasReady}
                         />
                       ))}
@@ -340,7 +374,7 @@ export default function Dashboard() {
       </main>
 
       {/* Right Sidebar */}
-      <aside className="w-3/12 bg-white border-l border-gray-100 p-4 shadow-sm max-h-screen no-scrollbar overflow-scroll">
+      <aside className="w-3/12 bg-white border-l border-gray-100 p-4 shadow-sm max-h-screen max-w-full  no-scrollbar ">
         <h2 className="text-lg font-bold mb-4">Right Panel</h2>
         <RightSidebar selectedCanvas={selectedCanvas} />
       </aside>

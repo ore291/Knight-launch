@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Canvas } from "fabric";
 import { TextEditor } from "../pages/dashboard/components/TextEditor";
-import { BackgroundEditor } from "./Sidebar-Components/BackgroundEditor";
+import { BackgroundEditor } from "../pages/dashboard/components/BackgroundEditor";
 import { LayoutEditor } from "./Sidebar-Components/LayoutEditor";
 import { ImageEditor } from "./Sidebar-Components/ImageEditor";
 
