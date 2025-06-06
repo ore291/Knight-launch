@@ -78,7 +78,7 @@ export const devices: DeviceType[] = [
         ry: 95,
         icon: Smartphone,
         popular: false,
-        dimensions: "2556 x 1179",
+        dimensions: "1179 x 2556",
         imageUrl: "/frames/iphone-16-black.png",
     },
     {

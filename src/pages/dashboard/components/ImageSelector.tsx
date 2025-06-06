@@ -173,8 +173,9 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({
       lockRotation: true,
      
     });
+    // selectedCanvas.sendObjectToBack(innerImg);
     selectedCanvas.add(group);
-    selectedCanvas.sendObjectToBack(innerImg);
+    
 
     selectedCanvas.setActiveObject(group);
     selectedCanvas.requestRenderAll();
@@ -222,7 +223,7 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({
     };
 
     return (
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-center space-y-4 max-w-full h-full">
         {preview && (
           <img
             src={preview}

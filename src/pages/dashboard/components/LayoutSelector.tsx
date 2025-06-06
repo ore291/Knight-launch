@@ -2,7 +2,7 @@ import { Canvas, FabricImage, IText } from "fabric";
 import React, { useCallback, useEffect, useState } from "react";
 import { CanvasComponent } from "../../../components/CanvasComponent";
 import type { CanvasItem, layoutType } from "../../../types";
-import { useAppContext } from "../../../context/AppContext";
+import { layouts } from "../utils/layouts";
 interface LayoutSelectorProps {
   selectedCanvas: Canvas | undefined;
 }
@@ -11,8 +11,8 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
 }) => {
   const [_, setCanvasItems] = useState<CanvasItem[]>([]);
 
-  const layoutCanvasHeight = 140;
-  const layoutCanvaswidth = 100;
+  const layoutCanvasHeight = 192;
+  const layoutCanvaswidth = 108;
 
   const add = async (items: layoutType) => {
     if (!selectedCanvas) {
@@ -58,157 +58,9 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
     selectedCanvas?.add(text);
   };
 
-  const { device } = useAppContext();
+  
 
-  const currentDeviceImg = device.imageUrl;
-
-  const layouts: layoutType[] = [
-    {
-      id: 1,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: 50,
-        top: 2,
-        scaleX: 1,
-        scaleY: 1,
-      },
-    },
-    {
-      id: 2,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: 90,
-        top: 70,
-        scaleX: 1,
-        scaleY: 1,
-      },
-    },
-    {
-      id: 3,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: 95,
-        top: 90,
-        scaleX: 1,
-        scaleY: 1,
-        angle: 45,
-      },
-    },
-    {
-      id: 4,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: -5,
-        top: 85,
-        scaleX: 1,
-        scaleY: 1,
-        angle: 45,
-      },
-    },
-    {
-      id: 5,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: 50,
-        top: 75,
-        scaleX: 1,
-        scaleY: 1,
-        angle: 30,
-      },
-    },
-    {
-      id: 6,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: 50,
-        top: 75,
-        scaleX: 1,
-        scaleY: 1,
-        angle: -30,
-      },
-    },
-    {
-      id: 7,
-      text: {
-        value: "Insert your text here",
-        left: 0,
-        top: 3,
-        originX: "center",
-        fontSize: 7,
-        fill: "#FFFFFF",
-      },
-      frame: {
-        url: currentDeviceImg,
-        originX: "center",
-        originY: "center",
-        left: -10,
-        top: 70,
-        scaleX: 1,
-        scaleY: 1,
-        angle: 0,
-      },
-    },
-  ];
+ 
   // Callback to store the canvas instance when initialized
   const handleCanvasReady = useCallback(() => {}, []);
   useEffect(() => {

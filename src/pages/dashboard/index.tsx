@@ -5,7 +5,6 @@ import {
   type WheelEvent,
   useCallback,
 } from "react";
-
 import { ZoomIn, ZoomOut, Plus, Trash2, Type } from "lucide-react";
 import LeftSidebar from "./LeftSidebar";
 import { Canvas, FabricImage, IText, Group } from "fabric";
@@ -14,14 +13,15 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
-import { saveAs } from "file-saver";
 import { CanvasComponent } from "../../components/CanvasComponent";
 import type { CanvasItem } from "../../types";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import JSZip from "jszip";
 import RightSidebar from "./RightSidebar";
 import { Tooltip } from "../../components/ui/tooltip";
+import ExportDialog from "./components/ExportDialog";
+
+
 
 export default function Dashboard() {
   const [zoom, setZoom] = useState<number>(0.5);
@@ -32,13 +32,13 @@ export default function Dashboard() {
   const [sortedCanvasItems, setSortedCanvasItems] = useState<CanvasItem[]>([
     { id: "canvas-1" },
   ]);
-  var canvasWidth = 322.5;
+  var canvasWidth = 360;
 
-  var canvasHeight = 500;
+  var canvasHeight = 640;
   const [selectedCanvasId, setSelectedCanvasId] = useState<string>("canvas-1");
   const [isDeletable, setIsDeletable] = useState(false);
   const [isTextActive, setIsTextActive] = useState(false);
- 
+
   // Get the currently selected canvas
   const selectedCanvas = canvasItems.find(
     (item) => item.id === selectedCanvasId
@@ -162,44 +162,11 @@ export default function Dashboard() {
     const activeObject = selectedCanvas?.getActiveObject();
     if (activeObject) {
       selectedCanvas?.remove(activeObject);
-      selectedCanvas?.discardActiveObject(); // Optional: clears selection
+      // selectedCanvas?.discardActiveObject(); // Optional: clears selection
       selectedCanvas?.requestRenderAll(); // Re-render canvas
     }
   }
-  const exportAllCanvas = async () => {
-    if (!selectedCanvas) {
-      alert("No canvas selected!");
-      return;
-    }
 
-    const scale = 6;
-    const zip = new JSZip();
-
-    // Loop over canvas items and add each to the ZIP
-    for (let index = 0; index < sortedCanvasItems.length; index++) {
-      const item = sortedCanvasItems[index];
-      const dataURL = item?.canvas?.toDataURL({
-        format: "png",
-        quality: 1,
-        multiplier: scale,
-      });
-
-      if (dataURL) {
-        // Convert Data URL to Blob
-        const blob = await fetch(dataURL).then((res) => res.blob());
-
-        // Add the file to the zip
-        zip.file(`project-name-${index + 1}.png`, blob);
-      }
-    }
-
-   try {
-     const zipBlob: Blob = await zip.generateAsync({ type: "blob" });
-     saveAs(zipBlob, "all-canvases.zip");
-   } catch (error) {
-     console.error("Failed to generate ZIP file:", error);
-   }
-  };
   useEffect(() => {
     const canvas = canvasAreaRef.current;
     if (!canvas) return;
@@ -297,19 +264,7 @@ export default function Dashboard() {
                 <Type size={18} />
               </button>
             </Tooltip>
-            {/* <select
-              onChange={(e) => {
-                // setDevIndex(Number(e.target.value));
-                updateDevice(devices[Number(e.target.value)]);
-              }}
-              className="px-2 py-2 text-sm border rounded"
-            >
-              {devices.map((device, index: number) => (
-                <option key={index} value={index}>
-                  {device.name}
-                </option>
-              ))}
-            </select> */}
+           
           </header>
         </div>
         <div className=" ">
@@ -374,8 +329,11 @@ export default function Dashboard() {
       </main>
 
       {/* Right Sidebar */}
-      <aside className="w-3/12 bg-white border-l border-gray-100 p-4 shadow-sm max-h-screen max-w-full  no-scrollbar ">
-        <h2 className="text-lg font-bold mb-4">Right Panel</h2>
+      <aside className="w-3/12  bg-white border-l border-gray-100 p-4 shadow-sm max-h-screen max-w-full  no-scrollbar ">
+        <div className="mb-4  w-full">
+          <ExportDialog sortedCanvasItems={sortedCanvasItems} />
+          
+        </div>
         <RightSidebar selectedCanvas={selectedCanvas} />
       </aside>
     </div>

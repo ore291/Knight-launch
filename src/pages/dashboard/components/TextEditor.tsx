@@ -277,14 +277,14 @@ export const TextEditor: React.FC<TextEditorProps> = ({ selectedCanvas }) => {
             disabled={!isActive}
             className={`w-10 h-10 border rounded ${!isActive && "opacity-50"}`}
           />
-          <span className={`${isActive && "opacity-50"}`}>
+          <span className={`${!isActive && "opacity-50"}`}>
             {String(backgroundColor)}
           </span>
         </div>
       </div>
       <div className="mb-2">
         <label
-          className={`block text-sm font-medium ${isActive && "opacity-50"}`}
+          className={`block text-sm font-medium ${!isActive && "opacity-50"}`}
         >
           Text Stroke Color
         </label>
