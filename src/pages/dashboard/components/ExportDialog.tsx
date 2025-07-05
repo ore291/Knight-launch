@@ -172,14 +172,14 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
           className="!cursor-pointer"
           size="2"
         >
-          <Download size={16} className="mr-2" />
+          <Download size={16} className="mr-2 cursor-pointer" />
           Export Screenshots
         </Button>
       </Dialog.Trigger>
 
       {/* Dialog Content */}
       <Dialog.Content className="max-w-md p-6">
-        <Dialog.Title>Export as Play Store Screenshots</Dialog.Title>
+        <Dialog.Title>Export Screenshots</Dialog.Title>
         <Dialog.Description className="mb-4 text-gray-600">
           Choose a device preset, then click “Export.” Each canvas will be
           bundled into a ZIP at that resolution.
@@ -193,7 +193,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
           width="auto"
         >
           {/* Mode Selection */}
-          <Flex direction="column" gap="2" className="mb-4">
+          {/* <Flex direction="column" gap="2" className="mb-4">
             <Label className="">Mode</Label>
             <RadioGroup.Root
               value={mode}
@@ -210,10 +210,10 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 Game – Highly Recommended (≥3 screenshots)
               </RadioGroup.Item>
             </RadioGroup.Root>
-          </Flex>
+          </Flex> */}
 
           {/* Preset Selection */}
-          <Flex direction="column" gap="2" className="mb-4">
+          {/* <Flex direction="column" gap="2" className="mb-4">
             <Label className="">Device Preset</Label>
             <RadioGroup.Root
               value={preset}
@@ -230,7 +230,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                 Tablet (Portrait 1200×1920)
               </RadioGroup.Item>
             </RadioGroup.Root>
-          </Flex>
+          </Flex> */}
 
           {/* Orientation Override */}
           <Flex direction="column" gap="2" className="mb-4">
@@ -278,13 +278,14 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
         {/* Export Button */}
         <div className="mt-6 flex justify-end items-center gap-2 space-x-2">
           <Dialog.Close>
-            <Button variant="ghost" size="2">
+            <Button variant="ghost" className="cursor-pointer" size="2">
               Cancel
             </Button>
           </Dialog.Close>
           <Button
             color="green"
             variant="solid"
+            className="cursor-pointer"
             size="2"
             onClick={exportAllCanvasAsPlayStoreScreenshots}
             disabled={loading}
